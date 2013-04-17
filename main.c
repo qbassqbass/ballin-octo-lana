@@ -23,7 +23,7 @@ int res = 0;
 
 int processCmd(char *cmd, char *u, char *p){
     //createprocess(cmd) with some user
-    printf("Creating Process %s with %s:%s\n"cmd,u,p);
+    printf("Creating Process %s with %s:%s\n",cmd,u,p);
     return 0;
 }
 
@@ -88,10 +88,13 @@ int main(int argc, char** argv) {
     char tmp[64];
     char servip[16];
     int port;
+    char portc[8];
     fscanf(settings,"%s",tmp);
     strcpy(servip,tmp+9);
-    fseek(settings,10,1);
-    fscanf(settings,"%d",port);
+    fseek(settings,13,1);
+    fscanf(settings,"%s",portc);
+    port = atoi(portc);
+    printf("%s:%d\n",servip,port);
     struct sockaddr_in addr,aAddr;
     struct hostent *he;
     struct in_addr adr;
