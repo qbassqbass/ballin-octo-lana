@@ -16,9 +16,11 @@
 int res;
 char servername[32];
 char serverip[16];
+char user[128];
+char password[128];
 int port;
 char command[128];
-boolean portSet,serveripSet,servernameSet,commandSet,multiSet;
+boolean portSet,serveripSet,servernameSet,commandSet,multiSet,userSet,passSet,uiModeSet;
 
 int sendLen(SOCKET sock, char* lenbuf){
     res = send(sock,lenbuf,sizeof(lenbuf),0);
@@ -36,18 +38,24 @@ int sendCmd(SOCKET sock, char* cmdbuf, int len){
     return 0;
 }
 
-void checkParams(int argc, char** argv){
+void checkParams(int argc, char** argv){ //maybe getopt.h?
+    uiModeSet = 0;
     portSet = 0;
     serveripSet = 0;
     servernameSet = 0;
     commandSet = 0;
     multiSet = 0;
+    userSet = 0;
+    passSet = 0;
     strcpy(servername,".");
     strcpy(serverip,".");
     port = 0;
     int i;
     for(i=0;i<argc;i++){
-        if(strcmp(argv[i],"-h") == 0){ //hostname
+        if(strcmp(argv[i],"-ui") == 0){ //asking mode :P
+            uiModeSet = 1;
+        }
+        else if(strcmp(argv[i],"-h") == 0){ //hostname
             strcpy(servername,argv[i+1]);
             servernameSet = 1;
         }else if(strcmp(argv[i],"-p") == 0){ //port
@@ -55,12 +63,18 @@ void checkParams(int argc, char** argv){
             portSet = 1;
         }else if(strcmp(argv[i],"-i") == 0){ //ipaddr
             strcpy(serverip,argv[i+1]);
-            serveripSet = 1;
+            serveripSet = 1;        
+        }else if(strcmp(argv[i],"-m") == 0){ //multi
+            multiSet = 1;
+        }else if(strcmp(argv[i],"-u") == 0){ //user
+            strcpy(user,argv[i+1]);
+            userSet = 1;
+        }else if(strcmp(argv[i],"-ps") == 0){ //pass
+            strcpy(password,argv[i+1]);
+            passSet = 1;
         }else if(strcmp(argv[i],"-c") == 0){ //cmd
             strcpy(command,argv[i+1]);
             commandSet = 1;
-        }else if(strcmp(argv[i],"-m") == 0 ){ //multi
-            multiSet = 1;
         }
         
     }
@@ -68,21 +82,52 @@ void checkParams(int argc, char** argv){
 
 int main(int argc, char** argv) {
     checkParams(argc, argv);
-    if(serveripSet || servernameSet){
-        if(portSet){
-            
+    if(uiModeSet){
+        printf("(I)IP or (H)Hostname? ");
+        char tmp;
+        scanf("%c",&tmp);
+        if(tmp == 'I'){
+            printf("Server IP: ");
+            scanf("%s",serverip);
+            serveripSet = 1;
         }else{
-            printf("Port not set!");
-            exit(1);
+            printf("Server Name: ");
+            scanf("%s",servername);
+            servernameSet = 1;
         }
-    }else{
-        printf("Server IP or Name not set!");
+        printf("Port: ");
+        scanf("%d",&port);
+        portSet = 1;
+        printf("Username: ");
+        scanf("%s",user);
+        userSet = 1;
+        printf("Password: ");
+        scanf("%s",password);
+        passSet = 1;
+        printf("Command: ");
+        scanf(" %[^\n]s",command);
+        commandSet = 1;
+        printf("CmdSpec: %s\n",command);
+    }
+    if(!(serveripSet || servernameSet)){
+        printf("Server IP or Name not set!\n");
         exit(1);
     }
+    if(!portSet){
+        printf("Port not set!\n");
+        exit(1);
+    }
+    printf("Server Data OK\n");
+    if(!(userSet && passSet)){
+        printf("User/Pass not specified!\n");
+        exit(1);
+    }
+    printf("User/Pass set. Wait for login\n");
     if(!(commandSet || multiSet)){
-        printf("Command not set or MultiMode not active!");
+        printf("Command not set or MultiMode not active!\n");
         exit(1);
     }
+    printf("Command Parse OK\n");
     boolean ifip;
     if(strcmp(servername,".") == 0) ifip = 1;
     else if (strcmp(serverip,".") == 0) ifip = 0;
@@ -142,7 +187,7 @@ int main(int argc, char** argv) {
         return 1;
     }
     printf("Executed %s without errors! :)",command);
-    system("pause");
+    //system("pause");
     WSACleanup();
     
     return (EXIT_SUCCESS);
