@@ -21,8 +21,9 @@
 
 int res = 0;
 
-int processCmd(char *cmd){
+int processCmd(char *cmd, char *u, char *p){
     //createprocess(cmd) with some user
+    printf("Creating Process %s with %s:%s\n"cmd,u,p);
     return 0;
 }
 
