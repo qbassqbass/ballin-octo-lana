@@ -13,6 +13,7 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>main.c</itemPath>
+      <itemPath>C:/Users/Qbass/Documents/NetBeansProjects/RSHClient/sockcmds.h</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -42,6 +43,11 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
+      <item path="C:/Users/Qbass/Documents/NetBeansProjects/RSHClient/sockcmds.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="main.c" ex="false" tool="0" flavor2="0">
       </item>
     </conf>
@@ -66,6 +72,11 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
+      <item path="C:/Users/Qbass/Documents/NetBeansProjects/RSHClient/sockcmds.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="main.c" ex="false" tool="0" flavor2="0">
       </item>
     </conf>
