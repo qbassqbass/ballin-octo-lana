@@ -10,7 +10,7 @@
 #include <w32api.h>
 #include <winsock2.h>
 #include <string.h>
-
+//SERVER
 
 
 /*
@@ -20,6 +20,15 @@
 #define CMD_ERROR = "CMD_255"
 
 int res = 0;
+
+struct srvdata{
+        char servername[32];
+        char serverip[16];
+        char user[128];
+        char password[128];
+        int port;
+        char command[128];
+}data;
 
 int processCmd(char *cmd, char *u, char *p){
     //createprocess(cmd) with some user
@@ -44,6 +53,26 @@ int recvCmd(SOCKET sock, char* mess,int len){
         return -1;
     }
     mess[len] = '\0';
+    return 0;
+}
+
+int sendOK(SOCKET sock){
+    res = send(sock,"OK",2,0);
+    if(res == SOCKET_ERROR){
+        return -1;
+    }
+    return 0;
+}
+
+int recvPacket(SOCKET sock, struct srvdata* dt){
+    char tmp[sizeof(struct srvdata)];
+    if (recvCmd(sock,tmp,sizeof(struct srvdata)) == -1){
+        return -1;
+    }
+    data = *(struct srvdata*)tmp;
+    if(sendOK(sock) == -1){
+        return -1;
+    }
     return 0;
 }
 
@@ -132,6 +161,7 @@ int main(int argc, char** argv) {
     clientip = inet_ntoa(aAddr.sin_addr);
     printf("*** Client connected ***\n*** Client's address: %s ***\n",clientip);
     //receive user and password
+/*
     char user[128];
     char password[128];
     
@@ -154,8 +184,20 @@ int main(int argc, char** argv) {
         printf("Receiving command failed with %u\n",WSAGetLastError());
         closesocket(asockfd);
     }
-    //process command from char command[]
+*/
+    recvPacket(asockfd,&data);
+    printf("***Received packet ***\n");
+    printf("ServerIP: %s\n",data.serverip);
+    printf("ServerName: %s\n",data.servername);
+    printf("ServerPort: %d\n",data.port);
+    printf("User: %s\n",data.user);
+    printf("Pass: %s\n",data.password);
+    printf("Cmd: %s\n",data.command);
     
+    //process command from char command[]
+    closesocket(asockfd);
+    closesocket(sockfd);
+    WSACleanup();
     return (EXIT_SUCCESS);
 }
 
